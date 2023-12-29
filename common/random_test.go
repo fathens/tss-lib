@@ -7,6 +7,7 @@
 package common_test
 
 import (
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -32,11 +33,14 @@ func TestGetRandomPositiveInt(t *testing.T) {
 }
 
 func TestGetRandomPositiveRelativelyPrimeInt(t *testing.T) {
-	rnd := common.MustGetRandomInt(randomIntBitLen)
-	rndPosRP := common.GetRandomPositiveRelativelyPrimeInt(rnd)
-	assert.NotZero(t, rndPosRP, "rand int should not be zero")
-	assert.True(t, common.IsNumberInMultiplicativeGroup(rnd, rndPosRP))
-	assert.True(t, rndPosRP.Cmp(big.NewInt(0)) == 1, "rand int should be positive")
+	for i := 0; i < 16; i++ {
+		rnd := common.MustGetRandomInt(randomIntBitLen)
+		rndPosRP := common.GetRandomPositiveRelativelyPrimeInt(rnd)
+		assert.NotZero(t, rndPosRP, "rand int should not be zero")
+		assert.True(t, common.IsNumberInMultiplicativeGroup(rnd, rndPosRP))
+		assert.True(t, rndPosRP.Cmp(big.NewInt(0)) == 1, "rand int should be positive")
+		fmt.Printf("%v, %v\n", rnd, rndPosRP)
+	}
 	// TODO test for relative primeness
 }
 

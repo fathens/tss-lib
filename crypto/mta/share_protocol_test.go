@@ -74,7 +74,8 @@ func TestShareProtocolWC(t *testing.T) {
 
 	a := common.GetRandomPositiveInt(q)
 	b := common.GetRandomPositiveInt(q)
-	gBX, gBY := tss.EC().ScalarBaseMult(b.Bytes())
+	gBPoint := crypto.ScalarBaseMult(tss.EC(), b)
+	//gBPoint, err := crypto.NewECPoint(tss.EC(), gBX, gBY)
 
 	NTildei, h1i, h2i, err := keygen.LoadNTildeH1H2FromTestFixture(0)
 	assert.NoError(t, err)
@@ -84,7 +85,6 @@ func TestShareProtocolWC(t *testing.T) {
 	cA, pf, err := AliceInit(tss.EC(), pk, a, NTildej, h1j, h2j)
 	assert.NoError(t, err)
 
-	gBPoint, err := crypto.NewECPoint(tss.EC(), gBX, gBY)
 	assert.NoError(t, err)
 	_, cB, betaPrm, pfB, err := BobMidWC(Session, tss.EC(), pk, pf, b, cA, NTildei, h1i, h2i, NTildej, h1j, h2j, gBPoint)
 	assert.NoError(t, err)

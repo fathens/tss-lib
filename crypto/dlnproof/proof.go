@@ -41,8 +41,7 @@ func NewDLNProof(h1, h2, x, p, q, N *big.Int) *Proof {
 		a[i] = common.GetRandomPositiveInt(pMulQ)
 		alpha[i] = modN.Exp(h1, a[i])
 	}
-	msg := append([]*big.Int{h1, h2, N}, alpha[:]...)
-	c := common.SHA512_256i(msg...)
+	c := hashMsg(h1, h2, N, alpha)
 	t := [Iterations]*big.Int{}
 	cIBI := new(big.Int)
 	for i := range t {
@@ -51,6 +50,11 @@ func NewDLNProof(h1, h2, x, p, q, N *big.Int) *Proof {
 		t[i] = modPQ.Add(a[i], modPQ.Mul(cIBI, x))
 	}
 	return &Proof{alpha, t}
+}
+
+func hashMsg(h1, h2, N *big.Int, alpha [Iterations]*big.Int) *big.Int {
+	msg := append([]*big.Int{h1, h2, N}, alpha[:]...)
+	return common.SHA512_256i(msg...)
 }
 
 func (p *Proof) Verify(h1, h2, N *big.Int) bool {
@@ -84,17 +88,17 @@ func (p *Proof) Verify(h1, h2, N *big.Int) bool {
 			return false
 		}
 	}
-	msg := append([]*big.Int{h1, h2, N}, p.Alpha[:]...)
-	c := common.SHA512_256i(msg...)
-	cIBI := new(big.Int)
+	c := hashMsg(h1, h2, N, p.Alpha)
 	for i := 0; i < Iterations; i++ {
 		if p.Alpha[i] == nil || p.T[i] == nil {
 			return false
 		}
 		cI := c.Bit(i)
-		cIBI = cIBI.SetInt64(int64(cI))
 		h1ExpTi := modN.Exp(h1, p.T[i])
-		h2ExpCi := modN.Exp(h2, cIBI)
+		h2ExpCi := new(big.Int).Add(h2, big.NewInt(0))
+		if cI == 0 {
+			h2ExpCi = big.NewInt(1)
+		}
 		alphaIMulH2ExpCi := modN.Mul(p.Alpha[i], h2ExpCi)
 		if h1ExpTi.Cmp(alphaIMulH2ExpCi) != 0 {
 			return false

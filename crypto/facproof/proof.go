@@ -32,7 +32,10 @@ var (
 )
 
 // NewProof implements prooffac
-func NewProof(Session []byte, ec elliptic.Curve, N0, NCap, s, t, N0p, N0q *big.Int) (*ProofFac, error) {
+func NewProof(
+	Session []byte,
+	ec elliptic.Curve,
+	N0, NCap, s, t, N0p, N0q *big.Int) (*ProofFac, error) {
 	if ec == nil || N0 == nil || NCap == nil || s == nil || t == nil || N0p == nil || N0q == nil {
 		return nil, errors.New("ProveFac constructor received nil value(s)")
 	}

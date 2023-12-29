@@ -56,18 +56,16 @@ func (round *round4) Start() *tss.Error {
 }
 
 func (round *round4) Update() (bool, *tss.Error) {
-	ret := true
 	for j, msg := range round.temp.signRound4Messages {
 		if round.ok[j] {
 			continue
 		}
 		if msg == nil || !round.CanAccept(msg) {
-			ret = false
-			continue
+			return false, nil
 		}
 		round.ok[j] = true
 	}
-	return ret, nil
+	return true, nil
 }
 
 func (round *round4) CanAccept(msg tss.ParsedMessage) bool {

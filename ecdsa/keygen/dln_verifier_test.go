@@ -7,6 +7,7 @@
 package keygen
 
 import (
+	"log"
 	"math/big"
 	"runtime"
 	"testing"
@@ -33,7 +34,11 @@ func BenchmarkDlnProof_Verify(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		proof.Verify(params.H1i, params.H2i, params.NTildei)
+		if proof.Verify(params.H1i, params.H2i, params.NTildei) {
+			log.Println("verify success")
+		} else {
+			b.Fatal("verify failed")
+		}
 	}
 }
 

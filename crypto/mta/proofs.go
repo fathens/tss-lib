@@ -8,8 +8,10 @@ package mta
 
 import (
 	"crypto/elliptic"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"math/big"
 
 	"github.com/bnb-chain/tss-lib/v2/common"
@@ -39,6 +41,20 @@ type (
 func ProveBobWC(Session []byte, ec elliptic.Curve, pk *paillier.PublicKey, NTilde, h1, h2, c1, c2, x, y, r *big.Int, X *crypto.ECPoint) (*ProofBobWC, error) {
 	if pk == nil || NTilde == nil || h1 == nil || h2 == nil || c1 == nil || c2 == nil || x == nil || y == nil || r == nil {
 		return nil, errors.New("ProveBob() received a nil argument")
+	}
+	log.Printf("session: 0x%s", hex.EncodeToString(Session))
+	log.Printf("pk: %v", pk.N)
+	log.Printf("NTilde: %v", NTilde)
+	log.Printf("h1: %v", h1)
+	log.Printf("h2: %v", h2)
+	log.Printf("c1: %v", c1)
+	log.Printf("c2: %v", c2)
+	log.Printf("x: %v", x)
+	log.Printf("y: %v", y)
+	log.Printf("r: %v", r)
+	if X != nil {
+		log.Printf("X.x: %v", X.X())
+		log.Printf("X.y: %v", X.Y())
 	}
 
 	NSquared := pk.NSquare()
@@ -190,6 +206,19 @@ func ProofBobFromBytes(bzs [][]byte) (*ProofBob, error) {
 // ProveBobWC.Verify implements verification of Bob's proof with check "VerifyMtawc_Bob" used in the MtA protocol from GG18Spec (9) Fig. 10.
 // an absent `X` verifies a proof generated without the X consistency check X = g^x
 func (pf *ProofBobWC) Verify(Session []byte, ec elliptic.Curve, pk *paillier.PublicKey, NTilde, h1, h2, c1, c2 *big.Int, X *crypto.ECPoint) bool {
+	log.Printf("pf.Z: %v", pf.Z)
+	log.Printf("pf.ZPrm: %v", pf.ZPrm)
+	log.Printf("pf.T: %v", pf.T)
+	log.Printf("pf.V: %v", pf.V)
+	log.Printf("pf.W: %v", pf.W)
+	log.Printf("pf.S: %v", pf.S)
+	log.Printf("pf.S1: %v", pf.S1)
+	log.Printf("pf.S2: %v", pf.S2)
+	log.Printf("pf.T1: %v", pf.T1)
+	log.Printf("pf.T2: %v", pf.T2)
+	log.Printf("pf.U.x: %v", pf.U.X())
+	log.Printf("pf.U.y: %v", pf.U.Y())
+
 	if pk == nil || NTilde == nil || h1 == nil || h2 == nil || c1 == nil || c2 == nil {
 		return false
 	}

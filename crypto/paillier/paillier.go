@@ -254,10 +254,14 @@ func L(u, N *big.Int) *big.Int {
 
 // GenerateXs generates the challenges used in Paillier key Proof
 func GenerateXs(m int, k, N *big.Int, ecdsaPub *crypto2.ECPoint) []*big.Int {
+	sX, sY := ecdsaPub.X(), ecdsaPub.Y()
+	return GenerateXsByXY(m, k, N, sX.Bytes(), sY.Bytes())
+}
+
+func GenerateXsByXY(m int, k, N *big.Int, sXb, sYb []byte) []*big.Int {
 	var i, n int
 	ret := make([]*big.Int, m)
-	sX, sY := ecdsaPub.X(), ecdsaPub.Y()
-	kb, sXb, sYb, Nb := k.Bytes(), sX.Bytes(), sY.Bytes(), N.Bytes()
+	kb, Nb := k.Bytes(), N.Bytes()
 	bits := N.BitLen()
 	blocks := int(gmath.Ceil(float64(bits) / 256))
 	chs := make([]chan []byte, blocks)

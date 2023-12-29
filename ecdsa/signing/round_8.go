@@ -28,18 +28,16 @@ func (round *round8) Start() *tss.Error {
 }
 
 func (round *round8) Update() (bool, *tss.Error) {
-	ret := true
 	for j, msg := range round.temp.signRound8Messages {
 		if round.ok[j] {
 			continue
 		}
 		if msg == nil || !round.CanAccept(msg) {
-			ret = false
-			continue
+			return false, nil
 		}
 		round.ok[j] = true
 	}
-	return ret, nil
+	return true, nil
 }
 
 func (round *round8) CanAccept(msg tss.ParsedMessage) bool {
